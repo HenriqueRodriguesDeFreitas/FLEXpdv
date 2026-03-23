@@ -1,0 +1,1 @@
+ALTER TABLE product ADD COLUMN unit_of_measure VARCHAR(2) NOT NULL;
