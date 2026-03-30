@@ -1,5 +1,6 @@
 package com.paulo.flexpdv.dto.response;
 
+import com.paulo.flexpdv.model.enums.UnitOfMeasure;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Digits;
 
@@ -19,5 +20,6 @@ public record ProductCreateResponseDto(
         @Schema(description = "Stock", example = "1.00")
         @Digits(integer = 10, fraction = 2) BigDecimal stock,
         @Schema(description = "Is active", example = "true") boolean isActive,
-        @Schema(description = "Stock control", example = "true") boolean stockControl) {
+        @Schema(description = "Stock control", example = "true") boolean stockControl,
+        @Schema(description = "Unit of measure", example = "UN") UnitOfMeasure unitOfMeasure) {
 }

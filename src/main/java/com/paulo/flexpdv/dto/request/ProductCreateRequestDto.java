@@ -39,6 +39,8 @@ public record ProductCreateRequestDto(
         @Schema(description = "Enable stock control", example = "true")
         boolean stockControl,
 
+        @Schema(description = "Unit of measure", example = "UN")
+        @NotNull
         UnitOfMeasure unitOfMeasure 
 
 ) {
