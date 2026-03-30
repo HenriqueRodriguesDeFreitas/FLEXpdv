@@ -4,6 +4,7 @@ import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
 import com.paulo.flexpdv.mapper.ProductMapper;
 import com.paulo.flexpdv.model.Product;
+import com.paulo.flexpdv.model.enums.UnitOfMeasure;
 import com.paulo.flexpdv.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class ProductServiceTest {
     void setUp() {
         createRequestDto = new ProductCreateRequestDto("product1",
                 "00000000000000", BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, true);
+                BigDecimal.ZERO, BigDecimal.ZERO, true, UnitOfMeasure.UN);
 
         product = new Product(UUID.randomUUID(),
                 "product1",
@@ -50,7 +51,8 @@ class ProductServiceTest {
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 true,
-                true
+                true,
+                UnitOfMeasure.UN
         );
     }
 
@@ -74,6 +76,6 @@ class ProductServiceTest {
     }
 
     private ProductCreateResponseDto convertObjectToResponseDto(Product p) {
-        return new ProductCreateResponseDto(p.getId(), p.getName(), p.getBarcode(), p.getCostPrice(), p.getSalePrice(), p.getStock(), p.isActive(), p.isStockControl());
+        return new ProductCreateResponseDto(p.getId(), p.getName(), p.getBarcode(), p.getCostPrice(), p.getSalePrice(), p.getStock(), p.isActive(), p.isStockControl(), p.getUnitOfMeasure());
     }
 }
