@@ -12,12 +12,20 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private ErrorResponseDto responseDto;
     @ExceptionHandler(ExistingEntityConflictException.class)
     public ResponseEntity<ErrorResponseDto> conflictEntityExisting(
             ExistingEntityConflictException ex) {
-        ErrorResponseDto responseDto = toResponse(HttpStatus.CONFLICT,
+        responseDto = toResponse(HttpStatus.CONFLICT,
                 "Entity already exists.", ex);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDto);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> illegalArgument(IllegalArgumentException ex){
+        responseDto = toResponse(HttpStatus.BAD_REQUEST,
+                "Argument invalid", ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
     }
 
 
