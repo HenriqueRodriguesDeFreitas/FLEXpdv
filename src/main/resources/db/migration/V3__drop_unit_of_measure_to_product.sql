@@ -1,0 +1,1 @@
+ALTER TABLE product DROP COLUMN IF EXISTS unit_of_measure;
