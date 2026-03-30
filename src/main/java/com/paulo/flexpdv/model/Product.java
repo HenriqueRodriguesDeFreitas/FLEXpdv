@@ -54,7 +54,7 @@ public class Product {
         this.stockControl = stockControl;
     }
 
-    public Product(UUID id, String name, String barcode, BigDecimal costPrice, BigDecimal salePrice, BigDecimal stock, boolean active, boolean stockControl) {
+    public Product(UUID id, String name, String barcode, BigDecimal costPrice, BigDecimal salePrice, BigDecimal stock, boolean active, boolean stockControl, UnitOfMeasure unitOfMeasure) {
         this.id = id;
         this.name = name;
         this.barcode = barcode;
@@ -63,6 +63,7 @@ public class Product {
         this.stock = stock;
         this.active = active;
         this.stockControl = stockControl;
+        this.unitOfMeasure = unitOfMeasure;
     }
 
     public UUID getId() {
