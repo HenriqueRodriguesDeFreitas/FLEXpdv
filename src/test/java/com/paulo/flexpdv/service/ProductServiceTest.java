@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -84,6 +85,32 @@ class ProductServiceTest {
         assertEquals("Product with this barcode already exists: " + product.getBarcode(), exception.getMessage());
     }
 
+    @Test
+    void create_whenNameAlreadyExists_shouldThrowExistingEntityConflictException() {
+        when(productRepository.findByBarcodeIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepository.findByNameIgnoreCase(anyString())).thenReturn(Optional.of(product));
+
+
+        var exception = assertThrows(ExistingEntityConflictException.class,
+                () -> productService.create(createRequestDto));
+
+        assertEquals("Product with this name already exists: " + product.getName(), exception.getMessage());
+    }
+
+    @Test
+    void create_whenDatabaseConstraintViolation_shouldThrowExistingEntityConflictException() {
+        when(productRepository.findByBarcodeIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productRepository.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(productMapper.toEntity(createRequestDto)).thenReturn(product);
+        when(productRepository.save(any(Product.class)))
+                .thenThrow(new DataIntegrityViolationException("constraint violation"));
+
+        var exception = assertThrows(ExistingEntityConflictException.class,
+                () -> productService.create(createRequestDto)
+        );
+
+        assertEquals("Database constraint violation", exception.getMessage());
+    }
 
 
     private ProductCreateResponseDto convertObjectToResponseDto(Product p) {
