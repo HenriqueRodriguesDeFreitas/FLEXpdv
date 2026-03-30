@@ -15,6 +15,7 @@ public interface ProductMapper {
     @Mapping(source = "salePrice", target = "salePrice")
     @Mapping(source = "stock", target = "stock")
     @Mapping(source = "stockControl", target = "stockControl")
+    @Mapping(source = "unitOfMeasure", target = "unitOfMeasure")
     Product toEntity(ProductCreateRequestDto request);
 
     @Mapping(source = "id", target = "id")
@@ -23,6 +24,6 @@ public interface ProductMapper {
     @Mapping(source = "costPrice", target = "costPrice")
     @Mapping(source = "salePrice", target = "salePrice")
     @Mapping(source = "stock", target = "stock")
-    @Mapping(source = "stockControl", target = "stockControl")
+    @Mapping(source = "unitOfMeasure", target = "unitOfMeasure")
     ProductCreateResponseDto toResponse(Product product);
 }
