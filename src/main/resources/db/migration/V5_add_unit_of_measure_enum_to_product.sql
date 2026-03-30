@@ -1,0 +1,1 @@
+ALTER TABLE product ADD COLUMN IF NOT EXISTS unit_measure unit_of_measure NOT NULL;
