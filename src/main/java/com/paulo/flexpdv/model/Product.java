@@ -35,10 +35,12 @@ public class Product {
     @Column(name = "stock_control")
     private boolean stockControl = true;
 
-    @Column(name = "unit_of_measure", length = 2, nullable = false)
-    private String unitOfMeasure;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "unit_measure", nullable = false)
+    private UnitOfMeasure unitOfMeasure;
 
-    public Product(){}
+    public Product() {
+    }
 
     public Product(String name,
                    String barcode,
@@ -121,5 +123,13 @@ public class Product {
 
     public void setStockControl(boolean stockControl) {
         this.stockControl = stockControl;
+    }
+
+    public UnitOfMeasure getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
     }
 }
