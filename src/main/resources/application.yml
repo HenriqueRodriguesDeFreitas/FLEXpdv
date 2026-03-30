@@ -1,0 +1,17 @@
+spring:
+  application:
+   name: flexpdv
+  datasource:
+   driver-class-name: org.postgresql.Driver
+   username: ${DB_USER}
+   password: ${DB_PASSWORD}
+   url: jdbc:postgresql://localhost:5432/flexpdv
+   hikari:
+     minimum-idle: 2
+     maximum-pool-size: 10
+  jpa:
+   show-sql: true
+   hibernate:
+    ddl-auto: none
+  flyway:
+   baseline-on-migrate: true
