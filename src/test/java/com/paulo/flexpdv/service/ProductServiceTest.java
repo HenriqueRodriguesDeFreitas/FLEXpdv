@@ -2,6 +2,7 @@ package com.paulo.flexpdv.service;
 
 import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
+import com.paulo.flexpdv.exception.custom.ExistingEntityConflictException;
 import com.paulo.flexpdv.mapper.ProductMapper;
 import com.paulo.flexpdv.model.Product;
 import com.paulo.flexpdv.model.enums.UnitOfMeasure;
@@ -17,8 +18,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -74,6 +74,17 @@ class ProductServiceTest {
         assertEquals(product.getName(), createResponseDto.name(), "Product name should match");
         assertEquals(product.getBarcode(), createResponseDto.barcode(), "Product barcode should match");
     }
+
+    @Test
+    void create_whenBarcodeAlreadyExists_shouldThrowExistingEntityConflictException() {
+        when(productRepository.findByBarcodeIgnoreCase(anyString())).thenReturn(Optional.of(product));
+
+        var exception = assertThrows(ExistingEntityConflictException.class, () -> productService.create(createRequestDto));
+
+        assertEquals("Product with this barcode already exists: " + product.getBarcode(), exception.getMessage());
+    }
+
+
 
     private ProductCreateResponseDto convertObjectToResponseDto(Product p) {
         return new ProductCreateResponseDto(p.getId(), p.getName(), p.getBarcode(), p.getCostPrice(), p.getSalePrice(), p.getStock(), p.isActive(), p.isStockControl(), p.getUnitOfMeasure());
