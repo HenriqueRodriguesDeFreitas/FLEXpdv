@@ -3,6 +3,7 @@ package com.paulo.flexpdv.mapper;
 import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
 import com.paulo.flexpdv.model.Product;
+import com.paulo.flexpdv.model.enums.UnitOfMeasure;
 import java.math.BigDecimal;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-29T19:57:27-0300",
+    date = "2026-03-30T13:21:40-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.10 (Oracle Corporation)"
 )
 @Component
@@ -30,6 +31,7 @@ public class ProductMapperImpl implements ProductMapper {
         product.setSalePrice( request.salePrice() );
         product.setStock( request.stock() );
         product.setStockControl( request.stockControl() );
+        product.setUnitOfMeasure( request.unitOfMeasure() );
 
         return product;
     }
@@ -46,6 +48,7 @@ public class ProductMapperImpl implements ProductMapper {
         BigDecimal costPrice = null;
         BigDecimal salePrice = null;
         BigDecimal stock = null;
+        UnitOfMeasure unitOfMeasure = null;
         boolean stockControl = false;
 
         id = product.getId();
@@ -54,11 +57,12 @@ public class ProductMapperImpl implements ProductMapper {
         costPrice = product.getCostPrice();
         salePrice = product.getSalePrice();
         stock = product.getStock();
+        unitOfMeasure = product.getUnitOfMeasure();
         stockControl = product.isStockControl();
 
         boolean isActive = false;
 
-        ProductCreateResponseDto productCreateResponseDto = new ProductCreateResponseDto( id, name, barcode, costPrice, salePrice, stock, isActive, stockControl );
+        ProductCreateResponseDto productCreateResponseDto = new ProductCreateResponseDto( id, name, barcode, costPrice, salePrice, stock, isActive, stockControl, unitOfMeasure );
 
         return productCreateResponseDto;
     }
