@@ -2,6 +2,8 @@ package com.paulo.flexpdv.model;
 
 import com.paulo.flexpdv.model.enums.UnitOfMeasure;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -36,7 +38,8 @@ public class Product {
     private boolean stockControl = true;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "unit_measure", nullable = false)
+    @Column(name = "unit_measure", nullable = false, columnDefinition = "unit_of_measure")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private UnitOfMeasure unitOfMeasure;
 
     public Product() {
