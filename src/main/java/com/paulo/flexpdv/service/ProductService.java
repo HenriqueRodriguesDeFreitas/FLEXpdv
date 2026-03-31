@@ -60,10 +60,20 @@ public class ProductService {
     }
 
     public ProductCreateResponseDto update(UUID productId, ProductUpdateRequestDto productRequest) {
-        Product productRetuned = productRepository.findById(productId)
-                .orElseThrow(()-> new EntityNotFoundException("Product does not exist"));
+        Product productReturned = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product does not exist"));
 
-        return productMapper.toResponse(productRetuned);
+        productRepository.findByBarcodeIgnoreCase(productRequest.barcode()).ifPresent(p -> {
+                    if(!p.getBarcode().equals(productReturned.getBarcode()))
+                        throw new ExistingEntityConflictException("Product with this barcode already exists: " + p.getBarcode());
+                });
+
+        productRepository.findByNameIgnoreCase(productRequest.name()).ifPresent(p -> {
+            if(!p.getName().equals(productReturned.getName()))
+                throw new ExistingEntityConflictException("Product with this name already exists: " + p.getName());
+        });
+
+        return productMapper.toResponse(productReturned);
     }
 
     private String normalize(String value) {
