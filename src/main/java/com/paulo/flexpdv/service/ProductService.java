@@ -1,7 +1,9 @@
 package com.paulo.flexpdv.service;
 
 import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
+import com.paulo.flexpdv.dto.request.ProductUpdateRequestDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
+import com.paulo.flexpdv.exception.custom.EntityNotFoundException;
 import com.paulo.flexpdv.exception.custom.ExistingEntityConflictException;
 import com.paulo.flexpdv.mapper.ProductMapper;
 import com.paulo.flexpdv.model.Product;
@@ -11,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -55,6 +59,13 @@ public class ProductService {
             log.error("Database wrror while saving product  with barcode: {}", barcode, e);
             throw new ExistingEntityConflictException("Database constraint violation");
         }
+    }
+
+    public ProductCreateResponseDto update(UUID productId, ProductUpdateRequestDto productRequest) {
+        Product productRetuned = productRepository.findById(productId)
+                .orElseThrow(()-> new EntityNotFoundException("Product does not exist"));
+
+        return productMapper.toResponse(productRetuned);
     }
 
     private String normalize(String value) {
