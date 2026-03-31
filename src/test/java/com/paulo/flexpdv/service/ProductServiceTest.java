@@ -120,6 +120,8 @@ class ProductServiceTest {
                 BigDecimal.ZERO, false, false, UnitOfMeasure.KG);
 
         when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(product));
+        when(productRepository.findByBarcodeIgnoreCase(updateRequest.barcode())).thenReturn(Optional.of(product));
+
 
         createResponseDto = productService.update(UUID.randomUUID(), updateRequest);
     }
