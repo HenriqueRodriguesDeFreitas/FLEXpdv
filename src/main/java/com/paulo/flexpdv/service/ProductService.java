@@ -38,11 +38,9 @@ public class ProductService {
         log.debug("Normalized data - name: {}, barcode: {}", name, barcode);
 
         if (productRepository.findByBarcodeIgnoreCase(barcode).isPresent()) {
-            log.warn("Product with barcode: {} already exists", barcode);
             throw new ExistingEntityConflictException("Product with this barcode already exists: " + barcode);
         }
         if (productRepository.findByNameIgnoreCase(name).isPresent()) {
-            log.warn("Product with name: {} already exists", name);
             throw new ExistingEntityConflictException("Product with this name already exists: " + name);
         }
 
