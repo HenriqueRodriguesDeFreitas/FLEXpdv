@@ -1,6 +1,7 @@
 package com.paulo.flexpdv.service;
 
 import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
+import com.paulo.flexpdv.dto.request.ProductUpdateRequestDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
 import com.paulo.flexpdv.exception.custom.ExistingEntityConflictException;
 import com.paulo.flexpdv.mapper.ProductMapper;
@@ -110,6 +111,17 @@ class ProductServiceTest {
         );
 
         assertEquals("Database constraint violation", exception.getMessage());
+    }
+
+    @Test
+    void update_whenValidRequest_shouldReturnUpdatedProduct() {
+        ProductUpdateRequestDto updateRequest
+                = new ProductUpdateRequestDto("novoNome", "00", BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, false, false, UnitOfMeasure.KG);
+
+        when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(product));
+
+        createResponseDto = productService.update(UUID.randomUUID(), updateRequest);
     }
 
 
