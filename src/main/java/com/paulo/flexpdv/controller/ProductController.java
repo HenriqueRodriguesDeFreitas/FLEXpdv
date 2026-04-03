@@ -2,6 +2,7 @@ package com.paulo.flexpdv.controller;
 
 import com.paulo.flexpdv.docs.ErrorExamples;
 import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
+import com.paulo.flexpdv.dto.request.ProductUpdateRequestDto;
 import com.paulo.flexpdv.dto.response.ErrorResponseDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
 import com.paulo.flexpdv.service.ProductService;
@@ -15,10 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("products")
@@ -47,5 +47,16 @@ public class ProductController {
     })
     public ResponseEntity<ProductCreateResponseDto> create(@RequestBody @Valid ProductCreateRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(request));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update product existing", description = "Used to update product existing")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product update sucessfully",
+                    content = @Content(mediaType = TYPE_JSON,
+                            schema = @Schema(implementation = ProductCreateResponseDto.class)))
+    })
+    public ResponseEntity<ProductCreateResponseDto> update(@PathVariable("id") UUID id, @RequestBody @Valid ProductUpdateRequestDto requestDto) {
+        return ResponseEntity.ok(productService.update(id, requestDto));
     }
 }
