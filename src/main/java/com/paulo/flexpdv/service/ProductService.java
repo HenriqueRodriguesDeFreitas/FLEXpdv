@@ -54,26 +54,46 @@ public class ProductService {
             log.info("Product saved successfully with id: {}", productSaved.getId());
             return productMapper.toResponse(productSaved);
         } catch (DataIntegrityViolationException e) {
-            log.error("Database wrror while saving product  with barcode: {}", barcode, e);
+            log.error("Database error while saving product  with barcode: {}", barcode, e);
             throw new ExistingEntityConflictException("Database constraint violation");
         }
     }
 
+    @Transactional
     public ProductCreateResponseDto update(UUID productId, ProductUpdateRequestDto productRequest) {
         Product productReturned = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product does not exist"));
 
-        productRepository.findByBarcodeIgnoreCase(productRequest.barcode()).ifPresent(p -> {
-                    if(!p.getBarcode().equals(productReturned.getBarcode()))
-                        throw new ExistingEntityConflictException("Product with this barcode already exists: " + p.getBarcode());
-                });
+        var name = normalize(productRequest.name());
+        var barcode = normalize(productRequest.barcode());
+        productRepository.findByBarcodeIgnoreCase(barcode).ifPresent(p -> {
+            if (!p.getBarcode().equals(barcode))
+                throw new ExistingEntityConflictException("Product with this barcode already exists: " + p.getBarcode());
+        });
 
-        productRepository.findByNameIgnoreCase(productRequest.name()).ifPresent(p -> {
-            if(!p.getName().equals(productReturned.getName()))
+        productRepository.findByNameIgnoreCase(name).ifPresent(p -> {
+            if (!p.getName().equals(name))
                 throw new ExistingEntityConflictException("Product with this name already exists: " + p.getName());
         });
 
-        return productMapper.toResponse(productReturned);
+        productReturned.setName(name);
+        productReturned.setBarcode(barcode);
+        productReturned.setCostPrice(productRequest.costPrice());
+        productReturned.setSalePrice(productRequest.salePrice());
+        productReturned.setStock(productRequest.stock());
+        productReturned.setStockControl(productRequest.stockControl());
+        productReturned.setActive(productRequest.active());
+        productReturned.setUnitOfMeasure(productRequest.unitOfMeasure());
+
+        try {
+            var productSaved = productRepository.save(productReturned);
+
+            log.info("Product saved sucessfully with id: {}", productSaved.getId());
+            return productMapper.toResponse(productSaved);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Database error while saving product with barcode: {}", barcode);
+            throw new ExistingEntityConflictException("Databse constraint violation");
+        }
     }
 
     private String normalize(String value) {
