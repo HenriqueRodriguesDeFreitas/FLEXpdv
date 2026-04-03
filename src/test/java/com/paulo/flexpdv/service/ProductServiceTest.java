@@ -3,6 +3,7 @@ package com.paulo.flexpdv.service;
 import com.paulo.flexpdv.dto.request.ProductCreateRequestDto;
 import com.paulo.flexpdv.dto.request.ProductUpdateRequestDto;
 import com.paulo.flexpdv.dto.response.ProductCreateResponseDto;
+import com.paulo.flexpdv.exception.custom.EntityNotFoundException;
 import com.paulo.flexpdv.exception.custom.ExistingEntityConflictException;
 import com.paulo.flexpdv.mapper.ProductMapper;
 import com.paulo.flexpdv.model.Product;
@@ -23,7 +24,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -39,6 +40,7 @@ class ProductServiceTest {
     private ProductCreateResponseDto createResponseDto;
     private ProductCreateRequestDto createRequestDto;
     private Product product;
+    private ProductUpdateRequestDto updateRequest;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +58,9 @@ class ProductServiceTest {
                 true,
                 UnitOfMeasure.UN
         );
+
+        updateRequest = new ProductUpdateRequestDto("newName", "0000", BigDecimal.valueOf(1.0),BigDecimal.TWO,
+                BigDecimal.ZERO, false, false, UnitOfMeasure.KG);
     }
 
     @Test
@@ -75,6 +80,11 @@ class ProductServiceTest {
         assertEquals(product.getId(), createResponseDto.id(), "Product id should match");
         assertEquals(product.getName(), createResponseDto.name(), "Product name should match");
         assertEquals(product.getBarcode(), createResponseDto.barcode(), "Product barcode should match");
+
+        updateRequest
+                = new ProductUpdateRequestDto("novoNome", "00", BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, false, false, UnitOfMeasure.KG);
+
     }
 
     @Test
@@ -115,15 +125,29 @@ class ProductServiceTest {
 
     @Test
     void update_whenValidRequest_shouldReturnUpdatedProduct() {
-        ProductUpdateRequestDto updateRequest
-                = new ProductUpdateRequestDto("novoNome", "00", BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, false, false, UnitOfMeasure.KG);
 
         when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(product));
-        when(productRepository.findByBarcodeIgnoreCase(updateRequest.barcode())).thenReturn(Optional.of(product));
+        when(productRepository.findByBarcodeIgnoreCase(updateRequest.barcode())).thenReturn(Optional.empty());
+        when(productRepository.findByNameIgnoreCase(updateRequest.name())).thenReturn(Optional.empty());
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenAnswer(invocation -> {
+            Product p = invocation.getArgument(0);
+            return convertObjectToResponseDto(p);
+        });
 
+        createResponseDto = productService.update(product.getId(), updateRequest);
 
-        createResponseDto = productService.update(UUID.randomUUID(), updateRequest);
+        assertEquals("newName", createResponseDto.name());
+        verify(productRepository, times(1)).save(any(Product.class));
+    }
+
+    @Test
+    void update_whenProductNotFound_shouldThrowException() {
+        when(productRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        var exception = assertThrows(EntityNotFoundException.class, ()-> productService.update(UUID.randomUUID(), updateRequest));
+
+        assertEquals("Product does not exist", exception.getMessage());
     }
 
 
