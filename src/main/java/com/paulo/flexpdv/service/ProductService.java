@@ -67,12 +67,12 @@ public class ProductService {
         var name = normalize(productRequest.name());
         var barcode = normalize(productRequest.barcode());
         productRepository.findByBarcodeIgnoreCase(barcode).ifPresent(p -> {
-            if (!p.getBarcode().equals(barcode))
+            if (!p.getId().equals(productReturned.getId()))
                 throw new ExistingEntityConflictException("Product with this barcode already exists: " + p.getBarcode());
         });
 
         productRepository.findByNameIgnoreCase(name).ifPresent(p -> {
-            if (!p.getName().equals(name))
+            if (!p.getId().equals(productReturned.getId()))
                 throw new ExistingEntityConflictException("Product with this name already exists: " + p.getName());
         });
 
@@ -92,7 +92,7 @@ public class ProductService {
             return productMapper.toResponse(productSaved);
         } catch (DataIntegrityViolationException e) {
             log.error("Database error while saving product with barcode: {}", barcode);
-            throw new ExistingEntityConflictException("Databse constraint violation");
+            throw new ExistingEntityConflictException("Database constraint violation");
         }
     }
 
