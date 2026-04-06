@@ -14,6 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +62,14 @@ public class ProductController {
     })
     public ResponseEntity<ProductCreateResponseDto> update(@PathVariable("id") UUID id, @RequestBody @Valid ProductUpdateRequestDto requestDto) {
         return ResponseEntity.ok(productService.update(id, requestDto));
+    }
+
+    @GetMapping
+    @Operation(summary = "List all products", description = "Returns a paginated list of registered products. Supports sorting and pagination.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Products retrieved sucessfully.")
+    })
+    public ResponseEntity<Page<ProductCreateResponseDto>> findAll(@ParameterObject @PageableDefault(size = 10, sort = "name") Pageable pageable) {
+        return ResponseEntity.ok(productService.findAll(pageable));
     }
 }
