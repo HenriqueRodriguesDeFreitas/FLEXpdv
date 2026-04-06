@@ -11,6 +11,8 @@ import com.paulo.flexpdv.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,6 +96,21 @@ public class ProductService {
             log.error("Database error while saving product with barcode: {}", barcode);
             throw new ExistingEntityConflictException("Database constraint violation");
         }
+    }
+
+    public Page<ProductCreateResponseDto> findAll(Pageable pageable) {
+        log.info("Search started");
+        Page<Product> productPage = productRepository.findAllByOrderByNameAsc(pageable);
+        log.info("Search returned");
+        return productPage.map(productMapper::toResponse);
+    }
+
+    public ProductCreateResponseDto findByBarcode(String barcode) {
+        log.info("Search started");
+        var product = productRepository.findByBarcodeIgnoreCase(normalize(barcode))
+                .orElseThrow(() -> new EntityNotFoundException("Product not exists."));
+
+        return productMapper.toResponse(product);
     }
 
     private String normalize(String value) {
